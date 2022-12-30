@@ -13,12 +13,12 @@ class ButlerActions(object):
         # nh_.param("trajectory_execution/controller_connection_timeout", timeout, 15.0); 
         rospy.sleep(1)
         self.ts = TransformServices()
-        self.ms = MotionServices(tool_group='uji_ur5')
+        self.ms = MotionServices(tool_group='uji_ur5', wrench_topic="/wrench", transform_force=True, from_frame="tool0_controller", to_frame="gripper_tip_link")
         self.pcl_processor = PCLProcessor()
         self.detected_objects_dict = {}
         self.grip_control = GripperControls()
         self.grip_control.activate_gripper()
-        self.grip_control.pinch_mode()
+        # self.grip_control.pinch_mode()
     
     def get_object_location(self):
         detected_objects, object_points_wrt_aruco, object_centroids_wrt_aruco = self.pcl_processor.find_object(object_names=["cup", "bottle", "other"])
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         pose = Pose()
         pose.position = cup_pose.position
         pose.position.z += 0.1
-        pose.position.y += 0.03
+        pose.position.y += 0.04
         pose.orientation = curr_pose.orientation
         pose_array = PoseArray()
         pose_array.poses.append(pose)
@@ -69,45 +69,72 @@ if __name__ == '__main__':
         if not result:
             rospy.sleep(5)
         else:
-            rospy.sleep(1)
+            rospy.sleep(5)
         
-        pose.position.z -= 0.1
-        pose.orientation = curr_pose.orientation
+        pose.position.z -= 0.2
         pose_array = PoseArray()
         pose_array.poses.append(pose)
         pose_array.header.frame_id = "base_link"
-        result = ba.ms.move_straight(
-        pose_array, vel_scale=0.1, acc_scale=0.1)
-        rospy.loginfo("Moved Straight !!!!!")
+        result = ba.ms.move_to_touch(
+        pose_array, 'z', force_thresh=3.5, vel_scale=0.1, acc_scale=0.1)
+        rospy.loginfo("Moved To Touch !!!!!")
         if not result:
             rospy.sleep(5)
         else:
-            rospy.sleep(1)
+            rospy.sleep(5)
+        print(ba.ms.goal_status)
         
         ba.grip_control.move_gripper(75)
         
-        ba.ms.move_group.set_named_target("home")
-        ba.ms.move_group.go()
-        rospy.sleep(1)
+        status = 0
+        err = 0
+        while status not in [2, 3]:
+            curr_pose = ba.ts.lookup_transform(
+            "base_link", "gripper_tip_link")
+            pose = curr_pose
+            pose.position.z += 0.3 + err
+            pose_array = PoseArray()
+            pose_array.poses.append(pose)
+            pose_array.header.frame_id = "base_link"
+            result = ba.ms.move_straight(
+            pose_array, vel_scale=0.1, acc_scale=0.1)
+            rospy.loginfo("Moved Straight !!!!!")
+            if not result:
+                rospy.sleep(5)
+            else:
+                rospy.sleep(5)
+            status = ba.ms.goal_status
+            err += 0.01
+        
+        status = 0
+        while status not in [2, 3]:
+            ba.ms.move_group.set_named_target("home")
+            ba.ms.move_group.go()
+            rospy.sleep(1)
+            status = ba.ms.goal_status
         
         cup_pose = ba.ts.lookup_transform("base_link", "cup2")
-        curr_pose = ba.ts.lookup_transform(
+        
+        status = 0
+        while status not in [2, 3]:
+            pose = Pose()
+            pose.position = cup_pose.position
+            pose.position.z += 0.1
+            pose.position.y += 0.04
+            curr_pose = ba.ts.lookup_transform(
             "base_link", "gripper_tip_link")
-        pose = Pose()
-        pose.position = cup_pose.position
-        pose.position.z += 0.1
-        pose.position.y += 0.03
-        pose.orientation = curr_pose.orientation
-        pose_array = PoseArray()
-        pose_array.poses.append(pose)
-        pose_array.header.frame_id = "base_link"
-        result = ba.ms.move_straight(
-        pose_array, vel_scale=0.1, acc_scale=0.1)
-        rospy.loginfo("Moved Straight !!!!!")
-        if not result:
-            rospy.sleep(5)
-        else:
-            rospy.sleep(1)
+            pose.orientation = curr_pose.orientation
+            pose_array = PoseArray()
+            pose_array.poses.append(pose)
+            pose_array.header.frame_id = "base_link"
+            result = ba.ms.move_straight(
+            pose_array, vel_scale=0.1, acc_scale=0.1)
+            rospy.loginfo("Moved Straight !!!!!")
+            if not result:
+                rospy.sleep(5)
+            else:
+                rospy.sleep(1)
+            status = ba.ms.goal_status
         
         ba.grip_control.move_gripper(0)
         
