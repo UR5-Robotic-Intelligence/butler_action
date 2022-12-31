@@ -58,7 +58,7 @@ if __name__ == '__main__':
         pose = Pose()
         pose.position = cup_pose.position
         pose.position.z += 0.1
-        pose.position.y += 0.04
+        pose.position.y += 0.07
         pose.orientation = curr_pose.orientation
         pose_array = PoseArray()
         pose_array.poses.append(pose)
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         pose_array.poses.append(pose)
         pose_array.header.frame_id = "base_link"
         result = ba.ms.move_to_touch(
-        pose_array, 'z', force_thresh=3.5, vel_scale=0.1, acc_scale=0.1)
+        pose_array, 'z', force_thresh=4, vel_scale=0.1, acc_scale=0.1)
         rospy.loginfo("Moved To Touch !!!!!")
         if not result:
             rospy.sleep(5)
@@ -120,7 +120,7 @@ if __name__ == '__main__':
             pose = Pose()
             pose.position = cup_pose.position
             pose.position.z += 0.1
-            pose.position.y += 0.04
+            pose.position.y += 0.07
             curr_pose = ba.ts.lookup_transform(
             "base_link", "gripper_tip_link")
             pose.orientation = curr_pose.orientation
