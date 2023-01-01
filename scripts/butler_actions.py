@@ -75,7 +75,7 @@ class ButlerActions(object):
         if not result:
             rospy.sleep(5)
         else:
-            rospy.sleep(5)
+            rospy.sleep(1)
         print(self.ms.goal_status)
     
     def move_to_frame_pos(self, frame_name, position_shift=(0, 0, 0),ref_frame="base_link", tool_frame="gripper_tip_link"):
@@ -164,7 +164,7 @@ if __name__ == '__main__':
             if not result:
                 rospy.sleep(5)
             else:
-                rospy.sleep(5)
+                rospy.sleep(1)
             status = ba.ms.goal_status
             err += 10 * pi/180
         
