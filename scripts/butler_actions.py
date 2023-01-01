@@ -173,16 +173,13 @@ if __name__ == '__main__':
         
         # MOVE UP A LITTLE TO REMOVE FORCE
         ba.move_up()
-        
+        rospy.sleep(1)
         # GRIP
         ba.grip_control.move_gripper(111)
         
-        # MOVE TO HOME
-        ba.move_to_named_location("home")
-        
         # MOVE TO CUP
-        ba.move_to_frame_pos("cup1", position_shift=(-0.02, 0.12, 0.25))
-        ba.move_to_frame_pos("cup1", position_shift=(-0.02, 0.05, 0.1))
+        ba.move_to_frame_pos("cup1", position_shift=(-0.015, 0.12, 0.18))
+        ba.move_to_frame_pos("cup1", position_shift=(-0.015, 0.05, 0.08))
         
         # OPEN GRIPPER
         ba.grip_control.move_gripper(0)
