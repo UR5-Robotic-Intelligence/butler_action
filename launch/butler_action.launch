@@ -1,0 +1,7 @@
+<launch>
+
+  <node pkg="ft_sensor_driver" type="lp_filter.py" name="lp_filter" output="screen"/>
+
+  <node pkg="butler_action" type="butler_actions.py" name="butler_actions" output="screen"/>
+
+</launch>
