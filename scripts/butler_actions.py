@@ -135,7 +135,7 @@ if __name__ == '__main__':
             "base_link", "gripper_tip_link")
         pose = Pose()
         pose.position = tea_pose.position
-        pose.position.z += 0.1
+        # pose.position.z += 0.1
         pose.position.y += 0.05
         pose.position.x -= 0.02
         pose.orientation = curr_pose.orientation
@@ -168,17 +168,11 @@ if __name__ == '__main__':
             status = ba.ms.goal_status
             err += 10 * pi/180
         
-        # MOVE TO TOUCH
-        ba.move_to_touch(force_thresh=2.5)
-        
-        # MOVE UP A LITTLE TO REMOVE FORCE
-        ba.move_up()
-        rospy.sleep(1)
         # GRIP
         ba.grip_control.move_gripper(111)
         
         # MOVE TO CUP
-        ba.move_to_frame_pos("cup1", position_shift=(-0.015, 0.12, 0.18))
+        ba.move_to_frame_pos("cup1", position_shift=(-0.015, 0.12, 0.16))
         ba.move_to_frame_pos("cup1", position_shift=(-0.015, 0.05, 0.08))
         
         # OPEN GRIPPER
