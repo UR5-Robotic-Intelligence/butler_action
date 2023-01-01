@@ -72,19 +72,20 @@ class GripperControls(object):
             if status.gGTO != 1: #Means gripper is moving or still performing activation
                 print("Gripper Moving")
                 continue
-            if status.gDTA != 3: #Means Finger A is still moving or is not at requested position
-                print("Finger A is Moving")
-                continue
-            if status.gDTB != 3: #Means Finger B is still moving or is not at requested position
-                print("Finger B is Moving")
-                continue
-            if status.gDTC != 3: #Means Finger C is still moving or is not at requested position
-                print("Finger C is Moving")
-                continue
+            # if status.gDTA != 3: #Means Finger A is still moving or is not at requested position
+            #     print("Finger A is Moving")
+            #     continue
+            # if status.gDTB != 3: #Means Finger B is still moving or is not at requested position
+            #     print("Finger B is Moving")
+            #     continue
+            # if status.gDTC != 3: #Means Finger C is still moving or is not at requested position
+            #     print("Finger C is Moving")
+            #     continue
             if status.gFLT != 0: #Means gripper is in fault state
                 print("Gripper is at Fault")
                 continue
             break
+        rospy.sleep(1)
         print("Done Moving Gripper")
         return True
 

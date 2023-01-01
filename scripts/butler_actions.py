@@ -57,7 +57,7 @@ class ButlerActions(object):
             if not result:
                 rospy.sleep(5)
             else:
-                rospy.sleep(5)
+                rospy.sleep(1)
             status = self.ms.goal_status
             err += 0.005
     
@@ -135,7 +135,7 @@ if __name__ == '__main__':
             "base_link", "gripper_tip_link")
         pose = Pose()
         pose.position = tea_pose.position
-        # pose.position.z += 0.1
+        pose.position.z += 0.003
         pose.position.y += 0.05
         pose.position.x -= 0.02
         pose.orientation = curr_pose.orientation
@@ -159,7 +159,7 @@ if __name__ == '__main__':
             pose_array.poses.append(new_pose)
             pose_array.header.frame_id = "initial_tea_grip_pose"
             result = ba.ms.move_straight(
-            pose_array, vel_scale=0.1, acc_scale=0.1,eef_step=0.01, jump_threshold=0.0, ref_frame="initial_tea_grip_pose")
+            pose_array, vel_scale=0.5, acc_scale=0.5,eef_step=0.01, jump_threshold=0.0, ref_frame="initial_tea_grip_pose")
             rospy.loginfo("Moved To Tea !!!!!")
             if not result:
                 rospy.sleep(5)
@@ -169,7 +169,7 @@ if __name__ == '__main__':
             err += 10 * pi/180
         
         # GRIP
-        ba.grip_control.move_gripper(111)
+        ba.grip_control.move_gripper(110)
         
         # MOVE TO CUP
         ba.move_to_frame_pos("cup1", position_shift=(-0.015, 0.12, 0.16))
