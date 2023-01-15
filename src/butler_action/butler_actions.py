@@ -100,6 +100,7 @@ class ButlerActions(object):
     
     def move_to_frame_pos(self, frame_name,
                           position_shift=(0, 0, 0),
+                          orientation_shift=(0, 0, 0),
                           ref_frame="base_link",
                           tool_frame="gripper_tip_link",
                           touch=False,
@@ -123,6 +124,13 @@ class ButlerActions(object):
             pose.orientation = tool_pose.orientation
         else:
             pose.orientation = frame_pose.orientation
+        init_orientation = np.array([pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w])
+        quat_rot = quaternion_from_euler(orientation_shift[0], orientation_shift[1], orientation_shift[2])
+        new_orientation = quaternion_multiply(quat_rot, init_orientation)
+        pose.orientation.x = new_orientation[0]
+        pose.orientation.y = new_orientation[1]
+        pose.orientation.z = new_orientation[2]
+        pose.orientation.w = new_orientation[3]
         self.ts.create_frame_at_pose(pose, ref_frame, "move_to_pose_" + frame_name)
         if straight:
             while (status not in [2, 3]) and (not rospy.is_shutdown()):
@@ -131,7 +139,7 @@ class ButlerActions(object):
                     pose_array.header.frame_id = ref_frame
                     if touch:
                         result = self.ms.move_to_touch(
-                        pose_array, 'xy', force_thresh=force_thresh, vel_scale=0.01, acc_scale=0.01, eef_step=0.1)
+                        pose_array, 'xy', force_thresh=force_thresh, vel_scale=0.01, acc_scale=0.01, eef_step=0.01)
                     else:
                         result = self.ms.move_straight(
                         pose_array, vel_scale=0.1, acc_scale=0.1, eef_step=0.01)
